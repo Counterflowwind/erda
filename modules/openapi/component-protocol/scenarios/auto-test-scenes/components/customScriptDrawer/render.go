@@ -12,29 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bundle
+package customScriptDrawer
 
 import (
-	"time"
+	"context"
 
-	"github.com/erda-project/erda/bundle"
-	"github.com/erda-project/erda/pkg/http/httpclient"
+	"github.com/erda-project/erda/apistructs"
+	protocol "github.com/erda-project/erda/modules/openapi/component-protocol"
 )
 
-var Bundle *bundle.Bundle
+type ApiEditorDrawer struct{}
 
-func init() {
-	bundleOpts := []bundle.Option{
-		bundle.WithOrchestrator(),
-		bundle.WithCMP(),
-		bundle.WithMSP(),
-		bundle.WithScheduler(),
-		bundle.WithCoreServices(),
-		bundle.WithDiceHub(),
-		bundle.WithClusterManager(),
-		bundle.WithHTTPClient(httpclient.New(
-			httpclient.WithTimeout(time.Second*10, time.Second*60),
-		)),
-	}
-	Bundle = bundle.New(bundleOpts...)
+func RenderCreator() protocol.CompRender {
+	return &ApiEditorDrawer{}
+}
+
+func (aep *ApiEditorDrawer) Render(ctx context.Context, c *apistructs.Component, scenario apistructs.ComponentProtocolScenario, event apistructs.ComponentEvent, gs *apistructs.GlobalStateData) error {
+	return nil
 }

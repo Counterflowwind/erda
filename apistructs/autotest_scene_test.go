@@ -12,29 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bundle
+package apistructs
 
 import (
-	"time"
+	"encoding/json"
+	"testing"
 
-	"github.com/erda-project/erda/bundle"
-	"github.com/erda-project/erda/pkg/http/httpclient"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/erda-project/erda/pkg/envconf"
 )
 
-var Bundle *bundle.Bundle
-
-func init() {
-	bundleOpts := []bundle.Option{
-		bundle.WithOrchestrator(),
-		bundle.WithCMP(),
-		bundle.WithMSP(),
-		bundle.WithScheduler(),
-		bundle.WithCoreServices(),
-		bundle.WithDiceHub(),
-		bundle.WithClusterManager(),
-		bundle.WithHTTPClient(httpclient.New(
-			httpclient.WithTimeout(time.Second*10, time.Second*60),
-		)),
+func TestAutoTestRunWait(t *testing.T) {
+	jsonStr := `{"waitTimeSec": 2}`
+	envMap := map[string]string{
+		"ACTION_WAIT_TIME_SEC": "2",
 	}
-	Bundle = bundle.New(bundleOpts...)
+
+	var (
+		jsonWait AutoTestRunWait
+		envWait  AutoTestRunWait
+	)
+	err := json.Unmarshal([]byte(jsonStr), &jsonWait)
+	assert.NoError(t, err)
+	err = envconf.Load(&envWait, envMap)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, jsonWait.WaitTimeSec)
+	assert.Equal(t, 2, envWait.WaitTimeSec)
 }
