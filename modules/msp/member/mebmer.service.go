@@ -176,11 +176,6 @@ func (m memberService) ListMember(ctx context.Context, request *pb.ListMemberReq
 	if err != nil {
 		return nil, errors.NewInternalServerError(err)
 	}
-	listMemberReq := apistructs.MemberListRequest{}
-	err = json.Unmarshal(data, &listMemberReq)
-	if err != nil {
-		return nil, errors.NewInternalServerError(err)
-	}
 	projectIdStr := m.GetProjectIdByScopeId(request.ScopeId)
 	if projectIdStr == "" {
 		return nil, errors.NewInternalServerError(fmt.Errorf("Query project record by scopeid is empty scopeId is %v", request.ScopeId))
@@ -189,7 +184,15 @@ func (m memberService) ListMember(ctx context.Context, request *pb.ListMemberReq
 	if err != nil {
 		return nil, errors.NewInternalServerError(err)
 	}
-	listMemberReq.ScopeID = int64(projectId)
+	listMemberReq := apistructs.MemberListRequest{
+		ScopeType: apistructs.ScopeType(request.ScopeType),
+		ScopeID:   int64(projectId),
+		Roles:     request.Roles,
+		Labels:    request.Label,
+		Q:         request.Q,
+		PageNo:    int(request.PageNo),
+		PageSize:  int(request.PageSize),
+	}
 	listTotal, err := m.p.bdl.ListMembersAndTotal(listMemberReq)
 	if err != nil {
 		return nil, errors.NewInternalServerError(err)
